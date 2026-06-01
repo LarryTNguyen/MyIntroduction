@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Redirecting...</title>
+    <script>
+      var pathSegmentsToKeep = 1;
+      var locationRef = window.location;
+      var pathParts = locationRef.pathname.split('/').filter(Boolean);
+      var basePath = pathParts.slice(0, pathSegmentsToKeep).join('/');
+      var routePath = pathParts.slice(pathSegmentsToKeep).join('/');
+      var query = locationRef.search
+        ? '&' + locationRef.search.slice(1).replace(/&/g, '~and~')
+        : '';
+      locationRef.replace(
+        locationRef.protocol +
+          '//' +
+          locationRef.host +
+          '/' +
+          basePath +
+          '/?/' +
+          routePath +
+          query +
+          locationRef.hash
+      );
+    </script>
+  </head>
+  <body>Redirecting...</body>
+</html>
