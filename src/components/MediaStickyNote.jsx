@@ -1,3 +1,5 @@
+import { formatReviewDate } from '../lib/dateFormat.js';
+import { InlineAdminActions } from './AdminToolbar.jsx';
 import { StarRating } from './StarRating.jsx';
 
 export function MediaPlaceholder({ item }) {
@@ -9,27 +11,31 @@ export function MediaPlaceholder({ item }) {
       </div>
       <h3 className="media-title-sticky">{item.title}</h3>
       <p className="media-review-sticky">{item.note}</p>
-      <span className="media-more">ready for admin entries next pass</span>
+      <span className="media-more">ready for your first entry</span>
     </article>
   );
 }
 
-export function MediaStickyNote({ item }) {
+export function MediaStickyNote({ item, isAdmin = false, onEdit, onDelete }) {
+  const displayDate = formatReviewDate(item.reviewDate || item.dateAccessed);
+
   return (
     <article className={`sticky-media sm-${item.color || 'purple'}`}>
+      {isAdmin ? <InlineAdminActions onEdit={() => onEdit?.(item)} onDelete={() => onDelete?.(item)} /> : null}
+
       <span className="media-type-tag">{item.typeLabel}</span>
       <div className="media-review-head">
         {item.imageUrl ? (
-          <img className="media-cover-img" src={item.imageUrl} alt={`${item.title} cover`} />
+          <img className={`media-cover-img media-cover-${item.type}`} src={item.imageUrl} alt={`${item.title} cover`} loading="lazy" />
         ) : (
           <div className="media-cover-sticky" aria-hidden="true">
             {item.type === 'movie' ? 'film' : 'music'}
           </div>
         )}
-        <div>
+        <div className="media-review-copy">
           <h3 className="media-title-sticky">{item.title}</h3>
           <p className="media-sub-sticky">
-            {item.creator} · {item.dateAccessed}
+            {item.creator} · {displayDate}
           </p>
           <StarRating rating={item.rating} />
         </div>

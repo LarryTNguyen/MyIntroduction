@@ -1,12 +1,16 @@
 import { Link } from 'react-router-dom';
+import { MediaPlaceholder, MediaStickyNote } from '../components/MediaStickyNote.jsx';
 import { ProjectStickyNote } from '../components/ProjectStickyNote.jsx';
-import { MediaPlaceholder } from '../components/MediaStickyNote.jsx';
 import { SocialLinks } from '../components/SocialLinks.jsx';
-import { profile } from '../data/profile.js';
-import { featuredProjects } from '../data/projects.js';
 import { mediaPlaceholders } from '../data/media.js';
+import { profile } from '../data/profile.js';
+import { useMediaReviews } from '../hooks/useMediaReviews.js';
+import { useProjects } from '../hooks/useProjects.js';
 
 export function HomePage() {
+  const { featuredProjects, error: projectError } = useProjects();
+  const { latestMovieReview, latestAlbumReview, error: mediaError } = useMediaReviews();
+
   return (
     <>
       <section className="hero section-pad" id="about" aria-labelledby="hero-heading">
@@ -38,37 +42,37 @@ export function HomePage() {
         </aside>
       </section>
 
-      <section className="home-grid section-pad" aria-labelledby="featured-heading">
-        <div>
-          <div className="section-head">
-            <h2 id="featured-heading" className="section-label">
-              ✦ featured projects
-            </h2>
-            <Link to="/projects" className="section-link">
-              all projects →
-            </Link>
-          </div>
-          <div className="sticky-board compact-board">
-            {featuredProjects.map((project) => (
-              <ProjectStickyNote key={project.id} project={project} />
-            ))}
-          </div>
+      <section className="home-projects section-pad" aria-labelledby="featured-heading">
+        <div className="section-head">
+          <h2 id="featured-heading" className="section-label">
+            ✦ featured projects
+          </h2>
+          <Link to="/projects" className="section-link">
+            all projects →
+          </Link>
         </div>
+        {projectError ? <p className="inline-warning">Showing local project data because Supabase returned: {projectError}</p> : null}
+        <div className="sticky-board compact-board">
+          {featuredProjects.map((project) => (
+            <ProjectStickyNote key={project.id} project={project} />
+          ))}
+        </div>
+      </section>
 
-        <aside className="recent-panel" aria-labelledby="recent-heading">
-          <div className="section-head">
-            <h2 id="recent-heading" className="section-label">
-              ✦ recently consumed
-            </h2>
-            <Link to="/media" className="section-link">
-              media page →
-            </Link>
-          </div>
-          <div className="media-sticky-board home-media-board">
-            <MediaPlaceholder item={mediaPlaceholders.movie} />
-            <MediaPlaceholder item={mediaPlaceholders.album} />
-          </div>
-        </aside>
+      <section className="home-recent section-pad" aria-labelledby="recent-heading">
+        <div className="section-head">
+          <h2 id="recent-heading" className="section-label">
+            ✦ recently consumed
+          </h2>
+          <Link to="/media" className="section-link">
+            media page →
+          </Link>
+        </div>
+        {mediaError ? <p className="inline-warning">Media reviews could not load from Supabase yet.</p> : null}
+        <div className="media-sticky-board home-media-board">
+          {latestMovieReview ? <MediaStickyNote item={latestMovieReview} /> : <MediaPlaceholder item={mediaPlaceholders.movie} />}
+          {latestAlbumReview ? <MediaStickyNote item={latestAlbumReview} /> : <MediaPlaceholder item={mediaPlaceholders.album} />}
+        </div>
       </section>
     </>
   );

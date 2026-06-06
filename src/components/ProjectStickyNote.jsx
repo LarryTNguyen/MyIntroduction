@@ -1,8 +1,12 @@
-export function ProjectStickyNote({ project, variant = 'compact' }) {
+import { InlineAdminActions } from './AdminToolbar.jsx';
+
+export function ProjectStickyNote({ project, variant = 'compact', isAdmin = false, onEdit, onDelete }) {
   const noteClass = variant === 'wide' ? 'sticky-proj sticky-proj-wide' : 'sticky-proj';
 
   return (
     <article className={`${noteClass} s-${project.color}`} style={{ '--rotate': project.rotation }}>
+      {isAdmin ? <InlineAdminActions onEdit={() => onEdit?.(project)} onDelete={() => onDelete?.(project)} /> : null}
+
       <span className="sticky-proj-num" aria-hidden="true">
         {project.number}
       </span>
@@ -10,6 +14,11 @@ export function ProjectStickyNote({ project, variant = 'compact' }) {
         <h3 className="sticky-proj-title">{project.title}</h3>
         {project.subtitle ? <p className="sticky-proj-subtitle">{project.subtitle}</p> : null}
       </div>
+
+      {variant === 'wide' && project.screenshotUrl ? (
+        <img className="project-shot" src={project.screenshotUrl} alt={`${project.title} screenshot`} loading="lazy" />
+      ) : null}
+
       <p className="sticky-proj-desc">{variant === 'wide' ? project.description : project.summary}</p>
 
       {variant === 'wide' ? (
@@ -17,7 +26,7 @@ export function ProjectStickyNote({ project, variant = 'compact' }) {
           <div>
             <h4>features</h4>
             <ul>
-              {project.features.map((feature) => (
+              {(project.features ?? []).map((feature) => (
                 <li key={feature}>{feature}</li>
               ))}
             </ul>
@@ -25,7 +34,7 @@ export function ProjectStickyNote({ project, variant = 'compact' }) {
           <div>
             <h4>my work</h4>
             <div className="contribution-list">
-              {project.contributions.map((item) => (
+              {(project.contributions ?? []).map((item) => (
                 <span key={item}>{item}</span>
               ))}
             </div>
@@ -34,14 +43,14 @@ export function ProjectStickyNote({ project, variant = 'compact' }) {
       ) : null}
 
       <div className="sticky-tech" aria-label="Tech stack">
-        {project.tech.map((tech) => (
+        {(project.tech ?? []).map((tech) => (
           <span className="sticky-pill" key={tech}>
             {tech}
           </span>
         ))}
       </div>
 
-      {variant === 'wide' ? (
+      {variant === 'wide' && project.tags?.length ? (
         <div className="sticky-tech tags-row" aria-label="Project tags">
           {project.tags.map((tag) => (
             <span className="sticky-pill tag-pill" key={tag}>
@@ -52,9 +61,11 @@ export function ProjectStickyNote({ project, variant = 'compact' }) {
       ) : null}
 
       <div className="sticky-link-row">
-        <a href={project.githubUrl} className="sticky-link" target="_blank" rel="noreferrer">
-          GitHub ↗
-        </a>
+        {project.githubUrl ? (
+          <a href={project.githubUrl} className="sticky-link" target="_blank" rel="noreferrer">
+            GitHub ↗
+          </a>
+        ) : null}
         {project.demoUrl ? (
           <a href={project.demoUrl} className="sticky-link" target="_blank" rel="noreferrer">
             demo ↗

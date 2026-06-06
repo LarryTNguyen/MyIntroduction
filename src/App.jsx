@@ -6,7 +6,6 @@ import { MediaPage } from './pages/MediaPage.jsx';
 import { ContactPage } from './pages/ContactPage.jsx';
 import { AdminPage } from './pages/AdminPage.jsx';
 import { NotFoundPage } from './pages/NotFoundPage.jsx';
-
 export function App() {
   return (
     <Routes>

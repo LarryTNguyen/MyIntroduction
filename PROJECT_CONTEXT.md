@@ -415,3 +415,72 @@ When asked to modify this project:
 - Add project and media image upload support through Supabase Storage rather than storing image binaries in table rows.
 - Replace or refine any project descriptions after Larry reviews the generated wording.
 - Add live demo URLs for any additional projects once available.
+
+## Development Log - Supabase Backend Pass (June 2026)
+
+Implemented the first Supabase-backed editing pass for the portfolio.
+
+### Backend and data changes
+
+- Added `@supabase/supabase-js` as the backend client dependency.
+- Added `src/lib/supabaseClient.js` with Vite environment variable support for `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
+- Added `src/context/AuthContext.jsx` for Supabase session loading, Google login, sign out, and admin detection.
+- Admin access is restricted in the UI to `larrynguyen4567@gmail.com`.
+- Added `supabase/schema.sql` with:
+  - `projects` table
+  - `media_reviews` table
+  - public read policies
+  - admin-only insert/update/delete policies
+  - public `media-assets` and `project-screenshots` Storage buckets
+  - admin-only Storage upload/update/delete policies
+  - seed data for current project entries
+- Added `.env.example` and `supabase/README.md` setup notes.
+
+### Frontend feature changes
+
+- Replaced the `/admin` placeholder with a working admin dashboard.
+- Added Google login flow through Supabase Auth.
+- Added project create/edit/delete forms.
+- Added media review create/edit/delete forms.
+- Added manual image uploads to Supabase Storage for movie posters, album covers, and optional project screenshots.
+- Added inline add/edit/delete controls on `/projects` and `/media` when logged in as the admin.
+- Added Supabase-backed hooks with static fallback data so the website still builds and renders before Supabase environment variables are added.
+- Home page now reads the latest movie and latest album review by review date when Supabase data exists.
+- Projects use manual display ordering.
+- Media reviews sort newest-first by review date.
+- Deletes are permanent.
+
+### Style and layout changes
+
+- Preserved the notebook/sticky-note visual system.
+- Added editor modal, admin toolbar, admin dashboard, and form styles that use the existing handwritten palette.
+- Added constrained image sizing for media covers:
+  - movies use a portrait cover size
+  - albums use a square cover size
+- Added optional project screenshot display on wide project cards.
+
+### Important setup reminders
+
+- Run `supabase/schema.sql` in the Supabase SQL Editor after creating the Supabase project.
+- Enable Google login in Supabase Auth.
+- Add redirect URLs for local development, the GitHub Pages URL, and the future custom domain.
+- Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` to `.env.local` locally and as GitHub Actions repository secrets or environment variables before deploying with live Supabase data.
+- When switching to a custom root domain, update `vite.config.js` from `base: '/MyIntroduction/'` to `base: '/'`.
+
+### Known follow-ups
+
+- Profile/front-page text is still local static content. Future pass can add a `profile_content` table if Larry wants to edit the hero copy from `/admin`.
+- Uploaded files are currently not automatically deleted from Storage when a row is deleted or an image is replaced. This keeps the client-side implementation simple. A future cleanup function or manual Storage cleanup may be useful.
+- RLS policies use the Google account email claim for admin writes. Keep the allowed email in sync if the admin email ever changes.
+
+## Change Log - Home Layout Fix
+
+- Split the home page `featured projects` and `recently consumed` areas into two separate full-width sections instead of sharing one two-column grid.
+- Updated the home media board to show movie and album notes side-by-side on wider screens and stack them on mobile.
+- This prevents the featured project sticky notes from overflowing into the recently consumed panel on very wide browser windows.
+
+## Maintenance Log — Routing Base Fix
+
+- Fixed local and GitHub Pages route handling for the `/MyIntroduction/` base path.
+- `BrowserRouter` now uses the Vite `BASE_URL` in development and production, so `/MyIntroduction/admin` resolves to the admin page instead of the not-found page.
+- Added a small GitHub Pages redirect restore helper so deep links redirected through `public/404.html` still land on the intended route.
