@@ -38,7 +38,7 @@ export function HomePage() {
             <img src={profile.photoPath} alt="Larry Nguyen smiling outside Geisel Library" className="polaroid-img" />
             <figcaption className="polaroid-caption">- Larry Nguyen</figcaption>
           </figure>
-          <div className="sticky-note-small">currently building: a better portfolio notebook</div>
+          <div className="sticky-note-small">currently building: a job tracking application</div>
         </aside>
       </section>
 

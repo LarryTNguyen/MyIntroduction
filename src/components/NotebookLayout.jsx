@@ -15,9 +15,9 @@ export function NotebookLayout() {
       </aside>
       <div className="page-main">
         <div className="lined-bg" aria-hidden="true" />
-        <div className="margin-note" aria-hidden="true">
+        {/* <div className="margin-note" aria-hidden="true">
           portfolio draft - 2026
-        </div>
+        </div> */}
         <div className="content">
           <NavBar />
           <main>
